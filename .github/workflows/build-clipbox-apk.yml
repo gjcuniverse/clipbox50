@@ -29,6 +29,24 @@ jobs:
       - name: Extract Android project
         run: unzip -q '1ClipBox50_Android_Project (1).zip' -d project
 
+      - name: Fix project configuration
+        working-directory: project/ClipBox50_APK
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          gradle_file = Path('build.gradle')
+          gradle_text = gradle_file.read_text()
+          marker = '\nallprojects {'
+          if marker in gradle_text:
+              gradle_text = gradle_text.split(marker, 1)[0] + '\n'
+          gradle_file.write_text(gradle_text)
+          manifest = Path('app/src/main/AndroidManifest.xml')
+          manifest_text = manifest.read_text()
+          manifest_text = manifest_text.replace('        android:icon="@mipmap/ic_launcher"\n', '')
+          manifest_text = manifest_text.replace('        android:roundIcon="@mipmap/ic_launcher"\n', '')
+          manifest.write_text(manifest_text)
+          PY
+
       - name: Build debug APK
         working-directory: project/ClipBox50_APK
         run: gradle assembleDebug --stacktrace
