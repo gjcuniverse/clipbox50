@@ -45,6 +45,7 @@ jobs:
           manifest_text = manifest_text.replace('        android:icon="@mipmap/ic_launcher"\n', '')
           manifest_text = manifest_text.replace('        android:roundIcon="@mipmap/ic_launcher"\n', '')
           manifest.write_text(manifest_text)
+          Path('gradle.properties').write_text('android.useAndroidX=true\nandroid.enableJetifier=true\n')
           PY
 
       - name: Build debug APK
